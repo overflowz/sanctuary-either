@@ -16,82 +16,102 @@
 //. `Either a b` is either a Left whose value is of type `a` or a Right whose
 //. value is of type `b`.
 
-(function(f) {
+(function (f) {
 
   'use strict';
 
-  var util = {inspect: {}};
+  var util = { inspect: {} };
 
   /* istanbul ignore else */
   if (typeof module === 'object' && typeof module.exports === 'object') {
-    module.exports = f (require ('util'),
-                        require ('sanctuary-show'),
-                        require ('sanctuary-type-classes'));
+    module.exports = f(require('util'),
+      require('sanctuary-show'),
+      require('sanctuary-type-classes'));
   } else if (typeof define === 'function' && define.amd != null) {
-    define (['sanctuary-show', 'sanctuary-type-classes'], function(show, Z) {
-      return f (util, show, Z);
+    define(['sanctuary-show', 'sanctuary-type-classes'], function (show, Z) {
+      return f(util, show, Z);
     });
   } else {
-    self.sanctuaryEither = f (util,
-                              self.sanctuaryShow,
-                              self.sanctuaryTypeClasses);
+    self.sanctuaryEither = f(util,
+      self.sanctuaryShow,
+      self.sanctuaryTypeClasses);
   }
 
-} (function(util, show, Z) {
+}(function (util, show, Z) {
 
   'use strict';
 
   /* istanbul ignore if */
   if (typeof __doctest !== 'undefined') {
-    var $ = __doctest.require ('sanctuary-def');
-    var type = __doctest.require ('sanctuary-type-identifiers');
-    var S = (function() {
-      var S = __doctest.require ('sanctuary');
+    var $ = __doctest.require('sanctuary-def');
+    var type = __doctest.require('sanctuary-type-identifiers');
+    var S = (function () {
+      var S = __doctest.require('sanctuary');
       var EitherType = $.BinaryType
         ('sanctuary-either/Either')
         ('')
-        (function(x) { return type (x) === Either['@@type']; })
-        (function(e) { return e.isLeft ? [e.value] : []; })
-        (function(e) { return e.isLeft ? [] : [e.value]; });
-      var env = Z.concat (S.env,
-                          [$.TypeClass, EitherType ($.Unknown) ($.Unknown)]);
-      return S.create ({checkTypes: true, env: env});
-    } ());
+        (function (x) { return type(x) === Either['@@type']; })
+        (function (e) { return e.isLeft ? [e.value] : []; })
+        (function (e) { return e.isLeft ? [] : [e.value]; });
+      var env = Z.concat(S.env,
+        [$.TypeClass, EitherType($.Unknown)($.Unknown)]);
+      return S.create({ checkTypes: true, env: env });
+    }());
   }
 
   var Either = {};
 
   var Left$prototype = {
     /* eslint-disable key-spacing */
-    'constructor':            Either,
-    'isLeft':                 true,
-    'isRight':                false,
-    '@@show':                 Left$prototype$show,
-    'fantasy-land/map':       Left$prototype$map,
-    'fantasy-land/bimap':     Left$prototype$bimap,
-    'fantasy-land/ap':        Left$prototype$ap,
-    'fantasy-land/chain':     Left$prototype$chain,
-    'fantasy-land/alt':       Left$prototype$alt,
-    'fantasy-land/reduce':    Left$prototype$reduce,
-    'fantasy-land/traverse':  Left$prototype$traverse,
-    'fantasy-land/extend':    Left$prototype$extend
+    'constructor': Either,
+    'isLeft': true,
+    'isRight': false,
+    '@@show': Left$prototype$show,
+    'fantasy-land/map': Left$prototype$map,
+    'fantasy-land/bimap': Left$prototype$bimap,
+    'fantasy-land/ap': Left$prototype$ap,
+    'fantasy-land/chain': Left$prototype$chain,
+    'fantasy-land/alt': Left$prototype$alt,
+    'fantasy-land/reduce': Left$prototype$reduce,
+    'fantasy-land/traverse': Left$prototype$traverse,
+    'fantasy-land/extend': Left$prototype$extend,
+
+    // for easy chaining.
+    'map': Left$prototype$map,
+    'bimap': Left$prototype$bimap,
+    'ap': Left$prototype$ap,
+    'chain': Left$prototype$chain,
+    'alt': Left$prototype$alt,
+    'reduce': Left$prototype$reduce,
+    'traverse': Left$prototype$traverse,
+    'extend': Left$prototype$extend,
     /* eslint-enable key-spacing */
   };
 
   var Right$prototype = {
     /* eslint-disable key-spacing */
-    'constructor':            Either,
-    'isLeft':                 false,
-    'isRight':                true,
-    '@@show':                 Right$prototype$show,
-    'fantasy-land/map':       Right$prototype$map,
-    'fantasy-land/bimap':     Right$prototype$bimap,
-    'fantasy-land/ap':        Right$prototype$ap,
-    'fantasy-land/chain':     Right$prototype$chain,
-    'fantasy-land/alt':       Right$prototype$alt,
-    'fantasy-land/reduce':    Right$prototype$reduce,
-    'fantasy-land/traverse':  Right$prototype$traverse,
-    'fantasy-land/extend':    Right$prototype$extend
+    'constructor': Either,
+    'isLeft': false,
+    'isRight': true,
+    '@@show': Right$prototype$show,
+    'fantasy-land/map': Right$prototype$map,
+    'fantasy-land/bimap': Right$prototype$bimap,
+    'fantasy-land/ap': Right$prototype$ap,
+    'fantasy-land/chain': Right$prototype$chain,
+    'fantasy-land/alt': Right$prototype$alt,
+    'fantasy-land/reduce': Right$prototype$reduce,
+    'fantasy-land/traverse': Right$prototype$traverse,
+    'fantasy-land/extend': Right$prototype$extend,
+
+    // for easy chaining.
+    'map': Right$prototype$map,
+    'bimap': Right$prototype$bimap,
+    'ap': Right$prototype$ap,
+    'chain': Right$prototype$chain,
+    'alt': Right$prototype$alt,
+    'reduce': Right$prototype$reduce,
+    'traverse': Right$prototype$traverse,
+    'extend': Right$prototype$extend
     /* eslint-enable key-spacing */
   };
 
@@ -153,15 +173,15 @@
   //. > Left ('sqrt undefined for -1')
   //. Left ('sqrt undefined for -1')
   //. ```
-  var Left = Either.Left = function(value) {
-    var left = Object.create (Left$prototype);
-    if (Z.Setoid.test (value)) {
+  var Left = Either.Left = function (value) {
+    var left = Object.create(Left$prototype);
+    if (Z.Setoid.test(value)) {
       left['fantasy-land/equals'] = Left$prototype$equals;
-      if (Z.Ord.test (value)) {
+      if (Z.Ord.test(value)) {
         left['fantasy-land/lte'] = Left$prototype$lte;
       }
     }
-    if (Z.Semigroup.test (value)) {
+    if (Z.Semigroup.test(value)) {
       left['fantasy-land/concat'] = Left$prototype$concat;
     }
     left.value = value;
@@ -177,14 +197,14 @@
   //. Right (42)
   //. ```
   var Right = Either.Right = function Right(value) {
-    var right = Object.create (Right$prototype);
-    if (Z.Setoid.test (value)) {
+    var right = Object.create(Right$prototype);
+    if (Z.Setoid.test(value)) {
       right['fantasy-land/equals'] = Right$prototype$equals;
-      if (Z.Ord.test (value)) {
+      if (Z.Ord.test(value)) {
         right['fantasy-land/lte'] = Right$prototype$lte;
       }
     }
-    if (Z.Semigroup.test (value)) {
+    if (Z.Semigroup.test(value)) {
       right['fantasy-land/concat'] = Right$prototype$concat;
     }
     right.value = value;
@@ -214,8 +234,8 @@
   //. ```
   Either['fantasy-land/of'] = Right;
 
-  function next(x) { return {tag: next, value: x}; }
-  function done(x) { return {tag: done, value: x}; }
+  function next(x) { return { tag: next, value: x }; }
+  function done(x) { return { tag: done, value: x }; }
 
   //# Either.fantasy-land/chainRec :: ((a -> c, b -> c, a) -> Either d c, a) -> Either d b
   //.
@@ -236,14 +256,14 @@
   //. . )
   //. Right (65536)
   //. ```
-  Either['fantasy-land/chainRec'] = function(f, x) {
-    var r = next (x);
+  Either['fantasy-land/chainRec'] = function (f, x) {
+    var r = next(x);
     while (r.tag === next) {
-      var either = f (next, done, r.value);
+      var either = f(next, done, r.value);
       if (either.isLeft) return either;
       r = either.value;
     }
-    return Right (r.value);
+    return Right(r.value);
   };
 
   //# Either#@@show :: (Showable a, Showable b) => Either a b ~> () -> String
@@ -259,10 +279,10 @@
   //. 'Right ([1, 2, 3])'
   //. ```
   function Left$prototype$show() {
-    return 'Left (' + show (this.value) + ')';
+    return 'Left (' + show(this.value) + ')';
   }
   function Right$prototype$show() {
-    return 'Right (' + show (this.value) + ')';
+    return 'Right (' + show(this.value) + ')';
   }
 
   //# Either#fantasy-land/equals :: (Setoid a, Setoid b) => Either a b ~> Either a b -> Boolean
@@ -284,10 +304,10 @@
   //. false
   //. ```
   function Left$prototype$equals(other) {
-    return other.isLeft && Z.equals (this.value, other.value);
+    return other.isLeft && Z.equals(this.value, other.value);
   }
   function Right$prototype$equals(other) {
-    return other.isRight && Z.equals (this.value, other.value);
+    return other.isRight && Z.equals(this.value, other.value);
   }
 
   //# Either#fantasy-land/lte :: (Ord a, Ord b) => Either a b ~> Either a b -> Boolean
@@ -312,10 +332,10 @@
   //. [Left (0), Left (1), Left (2)]
   //. ```
   function Left$prototype$lte(other) {
-    return other.isRight || Z.lte (this.value, other.value);
+    return other.isRight || Z.lte(this.value, other.value);
   }
   function Right$prototype$lte(other) {
-    return other.isRight && Z.lte (this.value, other.value);
+    return other.isRight && Z.lte(this.value, other.value);
   }
 
   //# Either#fantasy-land/concat :: (Semigroup a, Semigroup b) => Either a b ~> Either a b -> Either a b
@@ -341,10 +361,10 @@
   //. Right ([1, 2, 3])
   //. ```
   function Left$prototype$concat(other) {
-    return other.isLeft ? Left (Z.concat (this.value, other.value)) : other;
+    return other.isLeft ? Left(Z.concat(this.value, other.value)) : other;
   }
   function Right$prototype$concat(other) {
-    return other.isRight ? Right (Z.concat (this.value, other.value)) : this;
+    return other.isRight ? Right(Z.concat(this.value, other.value)) : this;
   }
 
   //# Either#fantasy-land/map :: Either a b ~> (b -> c) -> Either a c
@@ -363,7 +383,7 @@
     return this;
   }
   function Right$prototype$map(f) {
-    return Right (f (this.value));
+    return Right(f(this.value));
   }
 
   //# Either#fantasy-land/bimap :: Either a c ~> (a -> b, c -> d) -> Either b d
@@ -379,10 +399,10 @@
   //. Right (100)
   //. ```
   function Left$prototype$bimap(f, g) {
-    return Left (f (this.value));
+    return Left(f(this.value));
   }
   function Right$prototype$bimap(f, g) {
-    return Right (g (this.value));
+    return Right(g(this.value));
   }
 
   //# Either#fantasy-land/ap :: Either a b ~> Either a (b -> c) -> Either a c
@@ -409,7 +429,7 @@
     return other.isLeft ? other : this;
   }
   function Right$prototype$ap(other) {
-    return other.isLeft ? other : Right (other.value (this.value));
+    return other.isLeft ? other : Right(other.value(this.value));
   }
 
   //# Either#fantasy-land/chain :: Either a b ~> (b -> Either a c) -> Either a c
@@ -434,7 +454,7 @@
     return this;
   }
   function Right$prototype$chain(f) {
-    return f (this.value);
+    return f(this.value);
   }
 
   //# Either#fantasy-land/alt :: Either a b ~> Either a b -> Either a b
@@ -480,7 +500,7 @@
     return x;
   }
   function Right$prototype$reduce(f, x) {
-    return f (x, this.value);
+    return f(x, this.value);
   }
 
   //# Either#fantasy-land/traverse :: Applicative f => Either a b ~> (TypeRep f, b -> f c) -> f (Either a c)
@@ -496,10 +516,10 @@
   //. [Right ('foo'), Right ('bar'), Right ('baz')]
   //. ```
   function Left$prototype$traverse(typeRep, f) {
-    return Z.of (typeRep, this);
+    return Z.of(typeRep, this);
   }
   function Right$prototype$traverse(typeRep, f) {
-    return Z.map (Right, f (this.value));
+    return Z.map(Right, f(this.value));
   }
 
   //# Either#fantasy-land/extend :: Either a b ~> (Either a b -> c) -> Either a c
@@ -518,7 +538,7 @@
     return this;
   }
   function Right$prototype$extend(f) {
-    return Right (f (this));
+    return Right(f(this));
   }
 
   return Either;
